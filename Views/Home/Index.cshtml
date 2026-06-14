@@ -1,0 +1,275 @@
+﻿@model Crud_Core.Models.Employee
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-..." crossorigin="anonymous" />
+
+<style>
+    /* Page layout */
+    .form-card {
+        margin-top: 30px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(22, 27, 34, 0.08);
+        overflow: hidden;
+        border: 0;
+    }
+
+    .form-card .card-header {
+        background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
+        color: #fff;
+        font-weight: 600;
+        letter-spacing: .2px;
+    }
+
+    .form-label-required::after {
+        content: "*";
+        color: #d9534f;
+        margin-left: 4px;
+        font-size: 0.9em;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(99,102,241,0.15);
+        border-color: #6366f1;
+    }
+
+    .select-loading {
+        background-image: linear-gradient(90deg, rgba(0,0,0,0.03) 25%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.03) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.2s linear infinite;
+    }
+
+    @@keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    .small-muted {
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    .btn-primary {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+    }
+
+    .btn-primary:hover {
+        background-color: #2b6fda;
+        border-color: #2b6fda;
+    }
+
+    .required-note {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 8px;
+    }
+
+    @@media (max-width: 575.98px) {
+        .card-body .row > [class*="col-"] {
+            margin-bottom: 12px;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card form-card">
+                <div class="card-header">
+                    <h4 class="mb-0">Create Employee</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" id="formEmployee" novalidate>
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label form-label-required">Name</label>
+                                <input asp-for="Name" class="form-control" />
+                                <span class="text-danger" asp-validation-for="Name"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label form-label-required">Email</label>
+                                <input asp-for="Email" class="form-control" />
+                                <span class="text-danger" asp-validation-for="Email"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Role" class="form-label">Role</label>
+                                <input asp-for="Role" class="form-control" />
+                                <span class="text-danger" asp-validation-for="Role"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Country</label>
+                                <select asp-for="CountryId" id="ddlCountry" class="form-select">
+                                    <option value="">Select Country</option>
+                                    @foreach (var item in ViewBag.Countries)
+                                    {
+                                        <option value="@item.CountryId">@item.CountryName</option>
+                                    }
+                                </select>
+                                <span class="text-danger" asp-validation-for="CountryId"></span>
+                                <div class="small-muted">Choose the country first to load states.</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="StateId" class="form-label">State</label>
+                                <select asp-for="StateId" id="ddlState" class="form-select" disabled>
+                                    <option value="">Select State</option>
+                                </select>
+                                <span class="text-danger" asp-validation-for="StateId"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="CityId" class="form-label">City</label>
+                                <select asp-for="CityId" id="ddlCity" class="form-select" disabled>
+                                    <option value="">Select City</option>
+                                </select>
+                                <span class="text-danger" asp-validation-for="CityId"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <div class="required-note">Fields marked with * are required.</div>
+                            <div>
+                                <button type="submit" class="btn btn-primary me-2" id="btnSave">
+                                    Save
+                                </button>
+                                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<a href="/Home/list" class="btn btn-info">View Employees</a>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-NF0bQW8rKqOy2zQ+g+Qo4b1+oX+WRw1oC6g4wz6X5fK6G2qKf+8L3q2wz2Q7k9p/1bq5ZxX4H6eD6rV3r8mKg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js" integrity="sha512-+gEw6y5fZJxQe3Yg1l9q2M0vFh2yQ1qz6h7f1k8pZ2b3v4w5x6y7z8a9b0c1d2e3f4g5h6i7j8k9l0m1n2o3p==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    (function () {
+        function setLoading($select, isLoading) {
+            if (isLoading) {
+                $select.prop('disabled', true)
+                       .addClass('select-loading')
+                       .html('<option>Loading...</option>');
+            } else {
+                $select.prop('disabled', false)
+                       .removeClass('select-loading');
+            }
+        }
+
+        $("#ddlCountry").on('change', function () {
+            var countryId = $(this).val();
+            var $state = $("#ddlState");
+            var $city = $("#ddlCity");
+
+            $state.html('<option value="">Select State</option>');
+            $city.html('<option value="">Select City</option>');
+            $city.prop('disabled', true);
+
+            if (!countryId) {
+                $state.prop('disabled', true);
+                return;
+            }
+
+            setLoading($state, true);
+
+            $.ajax({
+                url: '/Home/getstate',
+                type: 'GET',
+                data: { id: countryId },
+                success: function (data) {
+                    $state.empty();
+                    $state.append('<option value="">Select State</option>');
+                    $.each(data, function (index, state) {
+                        var id = state.stateId || state.StateId || state.id || state.Id;
+                        var name = state.stateName || state.StateName || state.name || state.Name;
+                        $state.append('<option value="' + id + '">' + name + '</option>');
+                    });
+                   
+                    $.validator && $.validator.unobtrusive && $.validator.unobtrusive.parse($state);
+                },
+                error: function () {
+                    alert('Failed to load states. Please try again.');
+                },
+                complete: function () {
+                    setLoading($state, false);
+                }
+            });
+        });
+
+        $("#ddlState").on('change', function () {
+            var stateId = $(this).val();
+            var $city = $("#ddlCity");
+
+            $city.html('<option value="">Select City</option>');
+
+            if (!stateId) {
+                $city.prop('disabled', true);
+                return;
+            }
+
+            setLoading($city, true);
+
+            $.ajax({
+                url: '/Home/getcity',
+                type: 'GET',
+                data: { id: stateId },
+                success: function (data) {
+                    $city.empty();
+                    $city.append('<option value="">Select City</option>');
+                    $.each(data, function (index, city) {
+                        var id = city.cityId || city.CityId || city.id || city.Id;
+                        var name = city.cityName || city.CityName || city.name || city.Name;
+                        $city.append('<option value="' + id + '">' + name + '</option>');
+                    });
+                    $.validator && $.validator.unobtrusive && $.validator.unobtrusive.parse($city);
+                },
+                error: function () {
+                    alert('Failed to load cities. Please try again.');
+                },
+                complete: function () {
+                    setLoading($city, false);
+                }
+            });
+        });
+
+     
+        $(function () {
+            var $form = $("#formEmployee");
+           
+            $.validator && $.validator.unobtrusive && $.validator.unobtrusive.parse($form);
+
+            $form.on('submit', function (e) {
+                if (!$form.valid()) {
+                     e.preventDefault();
+                    return false;
+                }
+
+              
+                $("#btnSave").prop('disabled', true).text('Saving...');
+            });
+
+            var countryVal = $("#ddlCountry").val();
+            var stateVal = $("#ddlState").attr('data-selected') || '@Model?.StateId';
+            var cityVal = $("#ddlCity").attr('data-selected') || '@Model?.CityId';
+
+            if (countryVal) {
+                $("#ddlState").prop('disabled', false);
+            }
+            if (stateVal) {
+                $("#ddlCity").prop('disabled', false);
+            }
+        });
+    })();
+</script>

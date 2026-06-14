@@ -1,0 +1,190 @@
+﻿@model IEnumerable<Employee>
+
+<style>
+    :root{
+        --bg: #f6f8fb;
+        --card: #ffffff;
+        --muted: #6b7280;
+        --accent: #2563eb;
+        --accent-2: #06b6d4;
+        --border: #e6e9ef;
+        --success: #10b981;
+        --danger: #ef4444;
+    }
+
+    .page-container {
+        max-width: 1100px;
+        margin: 28px auto;
+        padding: 18px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.9));
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(15,23,42,0.06);
+        border: 1px solid var(--border);
+        background-color: var(--bg);
+    }
+
+    .header-row {
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+        margin-bottom:12px;
+    }
+
+    .header-row h2 {
+        margin:0;
+        font-size:1.125rem;
+        color:#0f172a;
+        letter-spacing: -0.2px;
+    }
+
+    .table-responsive {
+        overflow-x:auto;
+        border-radius: 8px;
+        background: var(--card);
+        padding: 12px;
+        border: 1px solid var(--border);
+    }
+
+    table.table-custom{
+        width:100%;
+        border-collapse:separate;
+        border-spacing:0;
+        min-width:720px;
+        font-family:Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    table.table-custom thead th{
+        text-align:left;
+        padding:10px 12px;
+        font-size:0.85rem;
+        color:var(--muted);
+        background: linear-gradient(180deg, rgba(240,242,247,0.8), rgba(248,249,252,0.9));
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top:0;
+        z-index:1;
+    }
+
+    table.table-custom tbody td{
+        padding:12px;
+        vertical-align:middle;
+        border-bottom:1px dashed rgba(15,23,42,0.04);
+        color:#0f172a;
+        font-size:0.95rem;
+    }
+
+    table.table-custom tbody tr:hover{
+        background: linear-gradient(90deg, rgba(37,99,235,0.03), rgba(6,182,212,0.02));
+    }
+
+    table.table-custom tbody tr:last-child td{
+        border-bottom: none;
+    }
+
+    .id-col {
+        width:64px;
+        color:var(--muted);
+        font-weight:600;
+    }
+
+    .email {
+        color:#0f172a;
+        text-decoration:none;
+    }
+
+    .email:hover { text-decoration:underline; }
+
+    .badge {
+        display:inline-block;
+        padding:6px 10px;
+        border-radius:999px;
+        font-size:0.8rem;
+        color:#fff;
+        font-weight:600;
+        letter-spacing:0.2px;
+    }
+
+    .badge-admin { background: linear-gradient(90deg,#7c3aed,#2563eb); }
+    .badge-manager { background: linear-gradient(90deg,#f97316,#f59e0b); }
+    .badge-user { background: linear-gradient(90deg,#06b6d4,#06b6d4); }
+    .badge-guest { background: linear-gradient(90deg,#9ca3af,#6b7280); }
+
+    .empty-row {
+        text-align:center;
+        padding:28px;
+        color:var(--muted);
+        font-style:italic;
+    }
+
+    /* Responsive: hide ids on small screens and allow table to scroll */
+    @@media (max-width: 720px){
+        .id-col, .country-col, .state-col, .city-col { display:none; }
+    }
+</style>
+
+<div class="page-container">
+    <div class="header-row">
+        <h2>Employees</h2>
+        <div style="color:var(--muted);font-size:0.9rem;">Total: @Model?.Count()</div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table-custom" aria-label="Employee list">
+            <thead>
+                <tr>
+                    <th class="id-col">Id</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th class="country-col">CountryId</th>
+                    <th class="state-col">StateId</th>
+                    <th class="city-col">CityId</th>
+                    <th class="city-col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        var country = ((List<Country>)ViewBag.Countries)
+                            .FirstOrDefault(x => x.CountryId == item.CountryId);
+
+                        var state = ((List<State>)ViewBag.States)
+                            .FirstOrDefault(x => x.StateId == item.StateId);
+
+                        var city = ((List<City>)ViewBag.Cities)
+                            .FirstOrDefault(x => x.CityId == item.CityId);
+
+                        <tr>
+                            <td class="id-col">@item.id</td>
+                            <td>@item.Name</td>
+                            <td>
+                                <a class="email" href="mailto:@item.Email">@item.Email</a>
+                            </td>
+                            <td>
+                                <span class="badge @(item.Role == "Admin" ? "badge-admin" : item.Role == "Manager" ? "badge-manager" : item.Role == "Guest" ? "badge-guest" : "badge-user")">
+                                    @item.Role
+                                </span>
+                            </td>
+                            <td class="country-col">@country?.CountryName</td>
+                            <td class="state-col">@state?.StateName</td>
+                            <td class="city-col">@city?.CityName</td>
+                            <td class="city-col">
+                                <a href="@Url.Action("Edit", new { id = item.id })" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <a href="@Url.Action("Delete", new { id = item.id })" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="empty-row">No employees found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
