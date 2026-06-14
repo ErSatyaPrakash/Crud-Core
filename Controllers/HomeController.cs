@@ -102,7 +102,10 @@ namespace Crud_Core.Controllers
             return RedirectToAction("List");
         }
 
-
+        public IActionResult Login()
+        {
+            return View();
+        }
 
 
         public IActionResult Privacy()

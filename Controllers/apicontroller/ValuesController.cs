@@ -24,7 +24,7 @@ public class ValuesController : ControllerBase
         context.Employees.Add(employee);
         context.SaveChanges();
         return Ok();
-    }s
+    }
 
     [HttpPut("{id}")]
     public IActionResult Put(int id, Employee employee)
