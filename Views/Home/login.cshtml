@@ -1,0 +1,117 @@
+﻿@model Crud_Core.Models.Employee
+<style>
+    /* Page layout */
+    .form-card {
+        margin-top: 30px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(22, 27, 34, 0.08);
+        overflow: hidden;
+        border: 0;
+    }
+
+        .form-card .card-header {
+            background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: .2px;
+        }
+
+    .form-label-required::after {
+        content: "*";
+        color: #d9534f;
+        margin-left: 4px;
+        font-size: 0.9em;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(99,102,241,0.15);
+        border-color: #6366f1;
+    }
+
+    .select-loading {
+        background-image: linear-gradient(90deg, rgba(0,0,0,0.03) 25%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.03) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.2s linear infinite;
+    }
+
+    @@keyframes shimmer {
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    .small-muted {
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    .btn-primary {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+    }
+
+        .btn-primary:hover {
+            background-color: #2b6fda;
+            border-color: #2b6fda;
+        }
+
+    .required-note {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 8px;
+    }
+
+    @@media (max-width: 575.98px) {
+        .card-body .row > [class*="col-"] {
+            margin-bottom: 12px;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card form-card">
+                <div class="card-header">
+                    <h4 class="mb-0">Login</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Login" method="post" id="formEmployee" novalidate>
+                  
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row g-3">
+                          
+
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label form-label-required">Email</label>
+                                <input asp-for="Email" class="form-control" placeholder="Enter email" />
+                                <span class="text-danger" asp-validation-for="Email"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Role" class="form-label">Role</label>
+                                <input asp-for="Role" class="form-control" placeholder="Enter role" />
+                                <span class="text-danger" asp-validation-for="Role"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <div class="required-note">Fields marked with * are required.</div>
+                            <div>
+                                <button type="submit" class="btn btn-primary me-2" id="btnSave">
+                                    Login
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

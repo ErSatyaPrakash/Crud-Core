@@ -85,19 +85,19 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label asp-for="Name" class="form-label form-label-required">Name</label>
-                                <input asp-for="Name" class="form-control" />
+                                <input asp-for="Name" class="form-control" placeholder="Enter name" />
                                 <span class="text-danger" asp-validation-for="Name"></span>
                             </div>
 
                             <div class="col-md-6">
                                 <label asp-for="Email" class="form-label form-label-required">Email</label>
-                                <input asp-for="Email" class="form-control" />
+                                <input asp-for="Email" class="form-control" placeholder="Enter email" />
                                 <span class="text-danger" asp-validation-for="Email"></span>
                             </div>
 
                             <div class="col-md-6">
                                 <label asp-for="Role" class="form-label">Role</label>
-                                <input asp-for="Role" class="form-control" />
+                                <input asp-for="Role" class="form-control" placeholder="Enter role" />
                                 <span class="text-danger" asp-validation-for="Role"></span>
                             </div>
 
@@ -148,7 +148,8 @@
 </div>
 
 
-<a href="/Home/list" class="btn btn-info">View Employees</a>
+<a href="/Home/list" class="btn btn-outline-success">View Employees</a>
+<a href="/Home/Login" class="btn btn-outline-danger ">Login</a>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
