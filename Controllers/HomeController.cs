@@ -1,4 +1,5 @@
 using Crud_Core.Models;
+using Crud_Core.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
@@ -11,19 +12,18 @@ namespace Crud_Core.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IEmployee _employeeRepository;
         private readonly IConfiguration _configuration;
 
-        public HomeController(ApplicationDbContext context, IConfiguration configuration)
+        public HomeController(IEmployee employeeRepository)
         {
-            _context = context;
-            _configuration = configuration;
+            _employeeRepository = employeeRepository;
         }
 
         public IActionResult Index()
         {
-            ViewBag.Countries = _context.Countries.ToList();
-            //var data =_context.Employees.ToList();
+            ViewBag.Countries = _employeeRepository.GetCountries();
+
             return View();
         }
 
@@ -33,60 +33,45 @@ namespace Crud_Core.Controllers
 
             if (ModelState.IsValid) 
             {
-                _context.Employees.Add(employee);
-                _context.SaveChanges();
-                return RedirectToAction("List");
+                _employeeRepository.addEmployee(employee);
+                return RedirectToAction("index");
             }
             return View();
         }
 
         public IActionResult List()
         {
-            var data = _context.Employees.ToList();
+            var data = _employeeRepository.getemployeelist();
 
-            ViewBag.Countries = _context.Countries.ToList();
-            ViewBag.States = _context.States.ToList();
-            ViewBag.Cities = _context.Cities.ToList();
+            ViewBag.Countries = _employeeRepository.GetCountries();
+            ViewBag.States = _employeeRepository.GetStates();
+            ViewBag.Cities = _employeeRepository.GetCities();
 
             return View(data);
         }
-
         [HttpGet]
-        public JsonResult getstate(int id)
+        public JsonResult GetStatesByCountry(int countryId)
         {
-            var data=_context.States.Where(x=>x.CountryId == id).ToList();
-            return Json(data);
+            return Json(_employeeRepository.GetStatesByCountry(countryId));
         }
 
         [HttpGet]
-        public JsonResult getcity(int id)
+        public JsonResult GetCitiesByState(int stateId)
         {
-            var data = _context.Cities.Where(x => x.StateId == id).ToList();
-            return Json(data);
+            return Json(_employeeRepository.GetCitiesByState(stateId));
         }
 
-        public IActionResult Details(int id)
+        public IActionResult delete(int id)
         {
-            var data=_context.Employees.FirstOrDefault(x=>x.id == id);
-            return View(data);
+            _employeeRepository.DeleteEmployee(id);
+            return RedirectToAction("index");
         }
 
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var data = _context.Employees.FirstOrDefault(x => x.id == id);
-
-            ViewBag.Countries = _context.Countries.ToList();
-
-            ViewBag.States = _context.States
-                .Where(x => x.CountryId == data.CountryId)
-                .ToList();
-
-            ViewBag.Cities = _context.Cities
-                .Where(x => x.StateId == data.StateId)
-                .ToList();
-
+            var data=_employeeRepository.getemployeebyid(id);
             return View(data);
         }
 
@@ -94,23 +79,13 @@ namespace Crud_Core.Controllers
         [HttpPost]
         public IActionResult Edit(Employee employee)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Employees.Update(employee);
-                _context.SaveChanges();
-                return RedirectToAction("List");
-            }
-            return View(employee);
+            _employeeRepository.UpdateEmployee(employee);
+            return RedirectToAction("Index");
         }
 
         public IActionResult Delete(int id)
         {
-            var data = _context.Employees.Where(x => x.id == id).FirstOrDefault();
-            if (data != null)
-            {
-                _context.Employees.Remove(data);
-                _context.SaveChanges();
-            }
+            _employeeRepository.DeleteEmployee(id);
             return RedirectToAction("List");
         }
 
@@ -118,22 +93,23 @@ namespace Crud_Core.Controllers
         {
             return View();
         }
-
         [HttpPost]
         public IActionResult Login(Employee employee)
         {
-            var data= _context.Employees.FirstOrDefault(s=>s.Email == employee.Email && s.Role == employee.Role);
-            if (employee == null)
-                return Unauthorized();
+            var data = _employeeRepository.Login(employee.Email,employee.Role);
 
-            var token = GenerateToken(employee);
+            if (data == null)
+            {
+                return Unauthorized();
+            }
+
+            var token = GenerateToken(data);
 
             return Ok(new
             {
                 Token = token
             });
         }
-
 
         private string GenerateToken(Employee user)
         {

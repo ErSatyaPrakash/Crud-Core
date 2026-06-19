@@ -1,10 +1,12 @@
 using Crud_Core.Models;
+using Crud_Core.Repository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IEmployee, EmployeeRepository>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {

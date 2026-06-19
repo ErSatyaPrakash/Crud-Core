@@ -12,12 +12,12 @@
         border: 0;
     }
 
-    .form-card .card-header {
-        background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
-        color: #fff;
-        font-weight: 600;
-        letter-spacing: .2px;
-    }
+        .form-card .card-header {
+            background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: .2px;
+        }
 
     .form-label-required::after {
         content: "*";
@@ -38,8 +38,13 @@
     }
 
     @@keyframes shimmer {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
     }
 
     .small-muted {
@@ -52,10 +57,10 @@
         border-color: #3b82f6;
     }
 
-    .btn-primary:hover {
-        background-color: #2b6fda;
-        border-color: #2b6fda;
-    }
+        .btn-primary:hover {
+            background-color: #2b6fda;
+            border-color: #2b6fda;
+        }
 
     .required-note {
         font-size: 0.85rem;
@@ -155,121 +160,151 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-NF0bQW8rKqOy2zQ+g+Qo4b1+oX+WRw1oC6g4wz6X5fK6G2qKf+8L3q2wz2Q7k9p/1bq5ZxX4H6eD6rV3r8mKg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js" integrity="sha512-+gEw6y5fZJxQe3Yg1l9q2M0vFh2yQ1qz6h7f1k8pZ2b3v4w5x6y7z8a9b0c1d2e3f4g5h6i7j8k9l0m1n2o3p==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
 <script>
     (function () {
-        function setLoading($select, isLoading) {
-            if (isLoading) {
-                $select.prop('disabled', true)
-                       .addClass('select-loading')
-                       .html('<option>Loading...</option>');
-            } else {
-                $select.prop('disabled', false)
-                       .removeClass('select-loading');
-            }
-        }
 
-        $("#ddlCountry").on('change', function () {
-            var countryId = $(this).val();
-            var $state = $("#ddlState");
-            var $city = $("#ddlCity");
+    function setLoading($select, isLoading) {
 
-            $state.html('<option value="">Select State</option>');
-            $city.html('<option value="">Select City</option>');
-            $city.prop('disabled', true);
+    if (isLoading) {
+    $select.prop('disabled', true)
+    .html('<option>Loading...</option>');
+    }
+    else {
+    $select.prop('disabled', false);
+    }
+    }
 
-            if (!countryId) {
-                $state.prop('disabled', true);
-                return;
-            }
+    // Country Change
+    $("#ddlCountry").on("change", function () {
 
-            setLoading($state, true);
+    var countryId = $(this).val();
 
-            $.ajax({
-                url: '/Home/getstate',
-                type: 'GET',
-                data: { id: countryId },
-                success: function (data) {
-                    $state.empty();
-                    $state.append('<option value="">Select State</option>');
-                    $.each(data, function (index, state) {
-                        var id = state.stateId || state.StateId || state.id || state.Id;
-                        var name = state.stateName || state.StateName || state.name || state.Name;
-                        $state.append('<option value="' + id + '">' + name + '</option>');
-                    });
-                   
-                    $.validator && $.validator.unobtrusive && $.validator.unobtrusive.parse($state);
-                },
-                error: function () {
-                    alert('Failed to load states. Please try again.');
-                },
-                complete: function () {
-                    setLoading($state, false);
-                }
-            });
-        });
+    $("#ddlState").html('<option value="">Select State</option>');
+    $("#ddlCity").html('<option value="">Select City</option>');
 
-        $("#ddlState").on('change', function () {
-            var stateId = $(this).val();
-            var $city = $("#ddlCity");
+    $("#ddlCity").prop("disabled", true);
 
-            $city.html('<option value="">Select City</option>');
+    if (!countryId) {
 
-            if (!stateId) {
-                $city.prop('disabled', true);
-                return;
-            }
+    $("#ddlState").prop("disabled", true);
+    return;
+    }
 
-            setLoading($city, true);
+    setLoading($("#ddlState"), true);
 
-            $.ajax({
-                url: '/Home/getcity',
-                type: 'GET',
-                data: { id: stateId },
-                success: function (data) {
-                    $city.empty();
-                    $city.append('<option value="">Select City</option>');
-                    $.each(data, function (index, city) {
-                        var id = city.cityId || city.CityId || city.id || city.Id;
-                        var name = city.cityName || city.CityName || city.name || city.Name;
-                        $city.append('<option value="' + id + '">' + name + '</option>');
-                    });
-                    $.validator && $.validator.unobtrusive && $.validator.unobtrusive.parse($city);
-                },
-                error: function () {
-                    alert('Failed to load cities. Please try again.');
-                },
-                complete: function () {
-                    setLoading($city, false);
-                }
-            });
-        });
+    $.ajax({
+
+    url: '/Home/GetStatesByCountry',
+    type: 'GET',
+    data: { countryId: countryId },
+
+    success: function (data) {
+
+    $("#ddlState").empty();
+    $("#ddlState").append('<option value="">Select State</option>');
+
+    $.each(data, function (i, item) {
+
+    $("#ddlState").append(
+    '<option value="' + item.stateId + '">' +
+    item.stateName +
+    '</option>'
+    );
+    });
+
+    $("#ddlState").prop("disabled", false);
+    },
+
+    error: function () {
+
+    alert("Unable to load states");
+    },
+
+    complete: function () {
+
+    setLoading($("#ddlState"), false);
+    }
+    });
+    });
+
+    // State Change
+    $("#ddlState").on("change", function () {
+
+    var stateId = $(this).val();
+
+    $("#ddlCity").html('<option value="">Select City</option>');
+
+    if (!stateId) {
+
+    $("#ddlCity").prop("disabled", true);
+    return;
+    }
+
+    setLoading($("#ddlCity"), true);
+
+    $.ajax({
+
+    url: '/Home/GetCitiesByState',
+    type: 'GET',
+    data: { stateId: stateId },
+
+    success: function (data) {
+
+    $("#ddlCity").empty();
+    $("#ddlCity").append('<option value="">Select City</option>');
+
+    $.each(data, function (i, item) {
+
+    $("#ddlCity").append(
+    '<option value="' + item.cityId + '">' +
+    item.cityName +
+    '</option>'
+    );
+    });
+
+    $("#ddlCity").prop("disabled", false);
+    },
+
+    error: function () {
+
+    alert("Unable to load cities");
+    },
+
+    complete: function () {
+
+    setLoading($("#ddlCity"), false);
+    }
+    });
+    });
+
+   
+
 
      
-        $(function () {
-            var $form = $("#formEmployee");
-           
-            $.validator && $.validator.unobtrusive && $.validator.unobtrusive.parse($form);
+    $(function () {
+    var $form = $("#formEmployee");
 
-            $form.on('submit', function (e) {
-                if (!$form.valid()) {
-                     e.preventDefault();
-                    return false;
-                }
+    $.validator && $.validator.unobtrusive && $.validator.unobtrusive.parse($form);
+
+    $form.on('submit', function (e) {
+    if (!$form.valid()) {
+    e.preventDefault();
+    return false;
+    }
 
               
-                $("#btnSave").prop('disabled', true).text('Saving...');
-            });
+    $("#btnSave").prop('disabled', true).text('Saving...');
+    });
 
-            var countryVal = $("#ddlCountry").val();
-            var stateVal = $("#ddlState").attr('data-selected') || '@Model?.StateId';
-            var cityVal = $("#ddlCity").attr('data-selected') || '@Model?.CityId';
+    var countryVal = $("#ddlCountry").val();
+    var stateVal = $("#ddlState").attr('data-selected') || '@Model?.StateId';
+    var cityVal = $("#ddlCity").attr('data-selected') || '@Model?.CityId';
 
-            if (countryVal) {
-                $("#ddlState").prop('disabled', false);
-            }
-            if (stateVal) {
-                $("#ddlCity").prop('disabled', false);  
-        });
+    if (countryVal) {
+    $("#ddlState").prop('disabled', false);
+    }
+    if (stateVal) {
+    $("#ddlCity").prop('disabled', false);
+    });
     })();
 </script>
