@@ -65,6 +65,12 @@ namespace Crud_Core.Controllers
             return Json(data);
         }
 
+        public IActionResult Details(int id)
+        {
+            var data=_context.Employees.FirstOrDefault(x=>x.id == id);
+            return View(data);
+        }
+
 
         [HttpGet]
         public IActionResult Edit(int id)

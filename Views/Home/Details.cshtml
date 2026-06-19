@@ -1,0 +1,56 @@
+﻿@model Crud_Core.Models.Employee
+
+<h2>Employee Details</h2>
+
+
+
+
+<table class="table">
+    <tr>
+        <th>Id</th>
+        <td>@Model.id</td>
+    </tr>
+    <tr>
+        <th>Name</th>
+        <td>@Model.Name</td>
+    </tr>
+    <tr>
+        <th>Email</th>
+        <td>@Model.Email</td>
+    </tr>
+    <tr>
+        <th>Role</th>
+        <td>@Model.Role</td>
+    </tr>
+    <tr>
+        <th>CountryId</th>
+        <td>@Model.CountryId</td>
+    </tr>
+    <tr>
+        <th>StateId</th>
+        <td>@Model.StateId</td>
+    </tr>
+    <tr>
+        <th>CityId</th>
+        <td>@Model.CityId</td>
+    </tr>
+</table>
+
+@* 
+<button type="button" onclick="window.history.back();" class="btn btn-secondary">
+    Back
+</button> *@
+
+
+<button id="btnBack" class="btn btn-secondary">Back</button>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+    $("#btnBack").click(function (e) {
+    e.preventDefault();
+    history.back();
+    });
+    });
+</script>
